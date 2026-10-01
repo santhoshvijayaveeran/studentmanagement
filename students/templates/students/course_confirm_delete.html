@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Delete Course{% endblock %}
+{% block breadcrumb %}Courses{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="bg-surface-container-lowest rounded-2xl border border-error/20 shadow-sm p-8 text-center">
+    <span class="w-14 h-14 rounded-full bg-error-container text-error flex items-center justify-center mx-auto mb-4"><span class="material-symbols-outlined text-3xl">warning</span></span>
+    <h1 class="font-headline-sm text-headline-sm text-on-surface mb-2">Delete Course?</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mb-6">
+      Are you sure you want to delete <span class="font-semibold text-on-surface">{{ course.code }} — {{ course.name }}</span>? All enrollments and grades linked to it will also be removed.
+    </p>
+    <form method="post" class="flex flex-col sm:flex-row gap-space-sm">
+      {% csrf_token %}
+      <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-error text-on-error font-label-lg text-label-lg hover:opacity-90 transition-all">
+        <span class="material-symbols-outlined text-lg">delete</span> Delete
+      </button>
+      <a href="{% url 'course_list' %}" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

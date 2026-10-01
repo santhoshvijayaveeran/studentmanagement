@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Leave{% endblock %}
+{% block breadcrumb %}Leave{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Records
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Leave Requests</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Submit and track your leave applications.</p>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+    <section class="lg:col-span-1 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6 h-fit">
+      <h2 class="font-title-lg text-title-lg text-on-surface mb-4">New Request</h2>
+      <form method="post" class="flex flex-col gap-space-md">
+        {% csrf_token %}
+        <div>
+          <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">Start Date</label>
+          <input type="date" name="start_date" required class="w-full px-3 py-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all"/>
+        </div>
+        <div>
+          <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">End Date</label>
+          <input type="date" name="end_date" required class="w-full px-3 py-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all"/>
+        </div>
+        <div>
+          <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">Reason</label>
+          <textarea name="reason" rows="4" required placeholder="Briefly describe the reason for leave" class="w-full px-3 py-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all"></textarea>
+        </div>
+        <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-lg">send</span> Submit Request
+        </button>
+      </form>
+    </section>
+
+    <section class="lg:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden h-fit">
+      <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-on-surface">My Requests</h2></div>
+      {% if leaves %}
+      <div class="divide-y divide-outline-variant/15">
+        {% for leave in leaves %}
+        <div class="px-5 py-4">
+          <div class="flex items-center justify-between mb-1">
+            <p class="font-body-sm text-body-sm text-on-surface font-medium">{{ leave.start_date|date:"M d" }} – {{ leave.end_date|date:"M d, Y" }} <span class="text-on-surface-variant font-normal">({{ leave.duration_days }} day{{ leave.duration_days|pluralize }})</span></p>
+            <span class="px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold
+              {% if leave.status == 'approved' %}bg-success-container text-on-success-container
+              {% elif leave.status == 'rejected' %}bg-error-container text-on-error-container
+              {% else %}bg-warning-container text-on-warning-container{% endif %}">
+              {{ leave.get_status_display }}
+            </span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">{{ leave.reason }}</p>
+          {% if leave.status == 'rejected' and leave.rejection_reason %}
+          <p class="font-label-sm text-label-sm text-error mt-1">Reason: {{ leave.rejection_reason }}</p>
+          {% endif %}
+          <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Applied {{ leave.applied_on|date:"M d, Y" }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="px-5 py-12 text-center font-body-sm text-body-sm text-on-surface-variant">No leave requests yet.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

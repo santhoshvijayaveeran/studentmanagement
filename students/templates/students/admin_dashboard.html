@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block breadcrumb %}Console{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+
+  <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div class="flex flex-col">
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Institutional Overview
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Good {% now "G" as h %}{% if h|add:0 < 12 %}morning{% elif h|add:0 < 17 %}afternoon{% else %}evening{% endif %}, {{ user.get_full_name|default:user.username }}</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Here's what's happening across Nexus University today.</p>
+    </div>
+    <div class="flex items-center gap-space-sm flex-wrap">
+      <a href="{% url 'student_create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+        <span class="material-symbols-outlined text-lg">person_add</span> Add Student
+      </a>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <div class="flex items-center justify-between">
+        <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Students</span>
+        <span class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-lg">school</span></span>
+      </div>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ total_students }}</div>
+      <a href="{% url 'student_list' %}" class="font-label-sm text-label-sm text-primary font-semibold mt-2 inline-block hover:underline">View all →</a>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <div class="flex items-center justify-between">
+        <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Courses</span>
+        <span class="w-9 h-9 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-lg">menu_book</span></span>
+      </div>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ total_courses }}</div>
+      <a href="{% url 'course_list' %}" class="font-label-sm text-label-sm text-primary font-semibold mt-2 inline-block hover:underline">View all →</a>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <div class="flex items-center justify-between">
+        <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Faculty</span>
+        <span class="w-9 h-9 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary"><span class="material-symbols-outlined text-lg">badge</span></span>
+      </div>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ total_faculty }}</div>
+      <a href="{% url 'faculty_reports_dashboard' %}" class="font-label-sm text-label-sm text-primary font-semibold mt-2 inline-block hover:underline">View all →</a>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <div class="flex items-center justify-between">
+        <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Fee Collected</span>
+        <span class="w-9 h-9 rounded-lg bg-success/10 flex items-center justify-center text-success"><span class="material-symbols-outlined text-lg">account_balance_wallet</span></span>
+      </div>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">₹{{ total_fee_amount|floatformat:0 }}</div>
+      <a href="{% url 'fee_list' %}" class="font-label-sm text-label-sm text-primary font-semibold mt-2 inline-block hover:underline">View all →</a>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/20 flex items-center justify-between">
+      <div><span class="font-label-sm text-label-sm text-on-surface-variant">Departments</span><div class="font-headline-sm text-headline-sm text-on-surface">{{ total_departments }}</div></div>
+      <span class="material-symbols-outlined text-outline">corporate_fare</span>
+    </div>
+    <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/20 flex items-center justify-between">
+      <div><span class="font-label-sm text-label-sm text-on-surface-variant">Enrollments</span><div class="font-headline-sm text-headline-sm text-on-surface">{{ total_enrollments }}</div></div>
+      <span class="material-symbols-outlined text-outline">how_to_reg</span>
+    </div>
+    <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/20 flex items-center justify-between">
+      <div><span class="font-label-sm text-label-sm text-on-surface-variant">Fees Paid</span><div class="font-headline-sm text-headline-sm text-success">{{ paid_fees }}</div></div>
+      <span class="material-symbols-outlined text-success">check_circle</span>
+    </div>
+    <div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/20 flex items-center justify-between">
+      <div><span class="font-label-sm text-label-sm text-on-surface-variant">Fees Pending</span><div class="font-headline-sm text-headline-sm text-warning">{{ pending_fees }}</div></div>
+      <span class="material-symbols-outlined text-warning">pending</span>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 xl:grid-cols-3 gap-space-md">
+    <div class="xl:col-span-2 bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/20">
+        <h2 class="font-title-lg text-title-lg text-on-surface">Recent Enrollments</h2>
+        <a href="{% url 'enrollment_list' %}" class="font-label-sm text-label-sm text-primary font-semibold hover:underline">View all</a>
+      </div>
+      {% if recent_enrollments %}
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+            <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for enrollment in recent_enrollments %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-on-primary flex items-center justify-center font-label-sm text-label-sm flex-shrink-0">{{ enrollment.student.name|slice:":2"|upper }}</span>
+              <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ enrollment.student.name }}</span>
+            </td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.course.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="px-5 py-8 text-center font-body-sm text-body-sm text-on-surface-variant">No recent enrollments.</p>
+      {% endif %}
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-5 flex flex-col">
+      <h2 class="font-title-lg text-title-lg text-on-surface mb-4">Recent Fee Payments</h2>
+      <div class="flex flex-col gap-space-sm">
+        {% for fee in recent_fees %}
+        <div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+          <div class="min-w-0">
+            <p class="font-body-sm text-body-sm text-on-surface font-medium truncate">{{ fee.student.name }}</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">{{ fee.get_fee_type_display }}</p>
+          </div>
+          <span class="px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold flex-shrink-0
+            {% if fee.payment_status == 'paid' %}bg-success-container text-on-success-container
+            {% elif fee.payment_status == 'partial' %}bg-warning-container text-on-warning-container
+            {% else %}bg-error-container text-on-error-container{% endif %}">
+            {{ fee.get_payment_status_display }}
+          </span>
+        </div>
+        {% empty %}
+        <p class="text-center font-body-sm text-body-sm text-on-surface-variant py-6">No fee records yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/20">
+      <h2 class="font-title-lg text-title-lg text-on-surface">Recently Released Grades</h2>
+      <a href="{% url 'grade_list' %}" class="font-label-sm text-label-sm text-primary font-semibold hover:underline">View all</a>
+    </div>
+    {% if recent_grades %}
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+          <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+          <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Grade</th>
+          <th class="px-5 py-2.5 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Released</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for grade in recent_grades %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ grade.enrollment.student.name }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ grade.enrollment.course.code }}</td>
+          <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[11px] font-semibold">{{ grade.grade }}</span></td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ grade.released_date|date:"M d, Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="px-5 py-8 text-center font-body-sm text-body-sm text-on-surface-variant">No grades released yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

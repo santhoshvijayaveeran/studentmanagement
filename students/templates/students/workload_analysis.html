@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Reports &amp; Analytics{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Reports &amp; Analytics
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-3 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Total Credits Assigned</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ total_credits_assigned }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Avg. Credits / Faculty</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ avg_credits }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Avg. Class Size</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ avg_class_size }}</div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-error"></span>
+        <h2 class="font-title-lg text-title-lg text-on-surface">High Load (&gt;12 credits)</h2>
+      </div>
+      <div class="divide-y divide-outline-variant/15">
+        {% for report in high_load %}
+        <div class="px-5 py-3 flex items-center justify-between">
+          <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ report.faculty.user.get_full_name }}</span>
+          <span class="font-label-sm text-label-sm text-error font-semibold">{{ report.total_credits_assigned }} cr</span>
+        </div>
+        {% empty %}
+        <p class="px-5 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">None.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-warning"></span>
+        <h2 class="font-title-lg text-title-lg text-on-surface">Medium Load (6–12)</h2>
+      </div>
+      <div class="divide-y divide-outline-variant/15">
+        {% for report in medium_load %}
+        <div class="px-5 py-3 flex items-center justify-between">
+          <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ report.faculty.user.get_full_name }}</span>
+          <span class="font-label-sm text-label-sm text-on-warning-container font-semibold">{{ report.total_credits_assigned }} cr</span>
+        </div>
+        {% empty %}
+        <p class="px-5 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">None.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-success"></span>
+        <h2 class="font-title-lg text-title-lg text-on-surface">Low Load (&lt;6)</h2>
+      </div>
+      <div class="divide-y divide-outline-variant/15">
+        {% for report in low_load %}
+        <div class="px-5 py-3 flex items-center justify-between">
+          <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ report.faculty.user.get_full_name }}</span>
+          <span class="font-label-sm text-label-sm text-success font-semibold">{{ report.total_credits_assigned }} cr</span>
+        </div>
+        {% empty %}
+        <p class="px-5 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">None.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-on-surface">All Faculty Workload</h2></div>
+    {% if all_reports %}
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Faculty</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Credits Assigned</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Avg. Class Size</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Peak Semester Load</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in all_reports %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ report.faculty.user.get_full_name }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.total_credits_assigned }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.average_class_size }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.peak_semester_load }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="px-5 py-8 text-center font-body-sm text-body-sm text-on-surface-variant">No workload data available.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

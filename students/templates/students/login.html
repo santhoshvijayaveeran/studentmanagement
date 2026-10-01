@@ -1,0 +1,85 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign In · Nexus University ERP</title>
+{% include "partials/_design_tokens.html" %}
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex items-center justify-center p-4 lg:p-8">
+
+<div class="w-full max-w-5xl grid lg:grid-cols-5 rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-outline-variant/20">
+
+  <div class="hidden lg:flex lg:col-span-2 flex-col justify-between p-10 bg-inverse-surface relative overflow-hidden">
+    <div class="absolute inset-0 opacity-30" style="background:radial-gradient(circle at 20% 20%, rgba(124,58,237,0.35) 0%, transparent 55%);"></div>
+    <div class="relative z-10 flex items-center gap-space-sm">
+      <svg class="h-9 w-9 flex-shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="16" fill="url(#logo-grad)"/>
+        <path d="M32 16L14 26L32 36L50 26L32 16Z" fill="#FFFFFF"/>
+        <path d="M20 32.5V41C20 45 25.37 48 32 48C38.63 48 44 45 44 41V32.5L32 39.5L20 32.5Z" fill="#E0E7FF"/>
+        <path d="M46 28.5V42M46 42C46 43.5 44.5 44 44.5 44" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/></linearGradient></defs>
+      </svg>
+      <div class="flex flex-col leading-tight">
+        <span class="font-title-md text-title-md text-inverse-on-surface">Sanza University</span>
+        <span class="font-label-sm text-label-sm text-outline-variant uppercase tracking-wider">Enterprise ERP</span>
+      </div>
+    </div>
+    <div class="relative z-10">
+      <span class="inline-block px-3 py-1 rounded-full bg-inverse-on-surface/10 text-inverse-on-surface font-label-sm text-label-sm uppercase tracking-wider mb-4">Academic Excellence</span>
+      <h1 class="font-display text-inverse-on-surface leading-tight mb-3">Connect to your future.</h1>
+      <p class="font-body-md text-body-md text-inverse-on-surface/70 max-w-xs">Sign in to access your courses, grades, attendance, and campus life — all in one console.</p>
+    </div>
+    <p class="relative z-10 font-label-sm text-label-sm text-inverse-on-surface/50">© {% now "Y" %} Sanza University</p>
+  </div>
+
+  <div class="lg:col-span-3 bg-surface-container-lowest p-8 sm:p-12 flex flex-col justify-center">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-1">Portal Sign In</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant mb-8">Enter your institutional credentials to continue.</p>
+
+    {% if messages %}
+    <div class="flex flex-col gap-space-sm mb-space-lg">
+      {% for message in messages %}
+      <div class="flex items-center gap-space-sm px-4 py-3 rounded-xl border font-body-sm text-body-sm {% if message.tags == 'error' %}bg-error-container text-on-error-container border-error/20{% else %}bg-success-container text-on-success-container border-success/20{% endif %}">
+        <span class="material-symbols-outlined text-lg">{% if message.tags == 'error' %}error{% else %}check_circle{% endif %}</span>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+    <div class="flex items-center gap-space-sm px-4 py-3 mb-space-lg rounded-xl border bg-error-container text-on-error-container border-error/20 font-body-sm text-body-sm">
+      <span class="material-symbols-outlined text-lg">error</span><span>{{ form.non_field_errors|striptags }}</span>
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}" class="flex flex-col gap-space-lg">
+      {% csrf_token %}
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5" for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+      </div>
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5" for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }}
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/30">
+          Remember me
+        </label>
+        <a href="{% url 'register' %}" class="font-label-md text-label-md text-primary font-semibold hover:underline">Create account</a>
+      </div>
+      <button type="submit" class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+        Access Dashboard <span class="material-symbols-outlined text-lg">arrow_forward</span>
+      </button>
+    </form>
+
+    <p class="mt-8 text-center font-body-sm text-body-sm text-on-surface-variant">
+      New to the portal? <a href="{% url 'register' %}" class="text-primary font-semibold hover:underline">Create an institutional account</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

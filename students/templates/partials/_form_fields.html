@@ -1,0 +1,28 @@
+{% for field in form %}
+  {% if field.field.widget.input_type == 'checkbox' %}
+  <div class="flex items-center gap-2">
+    {{ field }}
+    <label for="{{ field.id_for_label }}" class="font-label-lg text-label-lg text-on-surface">{{ field.label }}</label>
+  </div>
+  {% elif field.field.widget.input_type == 'radio' %}
+  <div>
+    <label class="block font-label-lg text-label-lg text-on-surface mb-2">{{ field.label }}</label>
+    <div class="flex flex-wrap gap-space-sm">
+      {% for radio in field %}
+      <label class="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline-variant/50 cursor-pointer font-label-md text-label-md text-on-surface-variant has-[:checked]:border-primary has-[:checked]:text-primary has-[:checked]:bg-primary/5">
+        {{ radio.tag }} {{ radio.choice_label }}
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div>
+    <label for="{{ field.id_for_label }}" class="block font-label-lg text-label-lg text-on-surface mb-1.5">
+      {{ field.label }}{% if field.field.required %} <span class="text-error">*</span>{% endif %}
+    </label>
+    {{ field }}
+    {% if field.help_text %}<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">{{ field.help_text }}</p>{% endif %}
+  </div>
+  {% endif %}
+  {% if field.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ field.errors|striptags }}</p>{% endif %}
+{% endfor %}

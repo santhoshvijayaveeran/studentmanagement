@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto flex flex-col gap-space-lg">
+  <a href="{% url 'notification_list' %}" class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-semibold hover:underline w-fit">
+    <span class="material-symbols-outlined text-lg">arrow_back</span> Back to Notifications
+  </a>
+
+  <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8">
+    <div class="flex items-center gap-space-sm mb-4">
+      <span class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-xl">notifications</span></span>
+      <div>
+        <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[11px] font-semibold uppercase">{{ notification.get_notification_type_display }}</span>
+        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">{{ notification.created_at|date:"M d, Y · g:i A" }}</p>
+      </div>
+    </div>
+    <h1 class="font-headline-sm text-headline-sm text-on-surface mb-3">{{ notification.subject }}</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant whitespace-pre-line">{{ notification.message }}</p>
+
+    <div class="flex flex-wrap gap-space-sm mt-8">
+      {% if notification.is_read %}
+      <form method="post" action="{% url 'notification_mark_unread' notification.id %}">
+        {% csrf_token %}
+        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all">
+          <span class="material-symbols-outlined text-lg">mark_email_unread</span> Mark as unread
+        </button>
+      </form>
+      {% endif %}
+      <form method="post" action="{% url 'notification_delete' notification.id %}">
+        {% csrf_token %}
+        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-error-container text-on-error-container font-label-lg text-label-lg hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-lg">delete</span> Delete
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

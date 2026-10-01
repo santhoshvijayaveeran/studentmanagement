@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Courses{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Course Analytics
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">{{ course.name }} · {{ course.department.name }}</p>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Enrollments</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ enrollments.count }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Avg. Marks</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ avg_marks }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Avg. Percentage</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ avg_percentage }}%</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Pass Rate</span>
+      <div class="font-display text-headline-lg text-success leading-none mt-2">{{ pass_rate }}%</div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+    <h2 class="font-title-lg text-title-lg text-on-surface mb-4">Grade Distribution</h2>
+    <div class="grid grid-cols-5 gap-space-sm">
+      {% for label, count in grade_dist.items %}
+      <div class="text-center">
+        <div class="h-24 flex items-end justify-center bg-surface-container-low rounded-lg p-1">
+          <div class="w-full rounded bg-gradient-to-t from-primary to-secondary" style="height: {% widthratio count all_grades.count|default:1 100 %}%; min-height: {% if count > 0 %}4px{% else %}0{% endif %};"></div>
+        </div>
+        <p class="font-label-lg text-label-lg text-on-surface mt-2">{{ label }}</p>
+        <p class="font-label-sm text-label-sm text-on-surface-variant">{{ count }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-space-md">
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-success">Top Performers</h2></div>
+      <div class="divide-y divide-outline-variant/15">
+        {% for grade in top_performers %}
+        <div class="px-5 py-3 flex items-center justify-between">
+          <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ grade.enrollment.student.name }}</span>
+          <span class="px-2 py-0.5 rounded-full bg-success-container text-on-success-container font-label-sm text-[11px] font-semibold">{{ grade.percentage }}%</span>
+        </div>
+        {% empty %}
+        <p class="px-5 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">No data yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-error">Needs Attention</h2></div>
+      <div class="divide-y divide-outline-variant/15">
+        {% for grade in bottom_performers %}
+        <div class="px-5 py-3 flex items-center justify-between">
+          <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ grade.enrollment.student.name }}</span>
+          <span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-[11px] font-semibold">{{ grade.percentage }}%</span>
+        </div>
+        {% empty %}
+        <p class="px-5 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">No data yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

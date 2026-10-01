@@ -1,0 +1,156 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{% block title %}SANZA Univercity{% endblock %} · Nexus ERP</title>
+{% include "partials/_design_tokens.html" %}
+{% block extra_css %}{% endblock %}
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+
+<div id="mobileOverlay" class="fixed inset-0 bg-inverse-surface/60 z-40 hidden lg:hidden" onclick="toggleSidebar(false)"></div>
+
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-inverse-surface border-r border-outline/20 z-50 flex flex-col justify-between overflow-y-auto -translate-x-full lg:translate-x-0 transition-transform duration-200">
+  <div class="flex flex-col">
+    <div class="flex items-center gap-space-sm px-space-md py-space-md border-b border-outline/20">
+      <svg class="h-8 w-8 flex-shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="16" fill="url(#logo-grad)"/>
+        <path d="M32 16L14 26L32 36L50 26L32 16Z" fill="#FFFFFF"/>
+        <path d="M20 32.5V41C20 45 25.37 48 32 48C38.63 48 44 45 44 41V32.5L32 39.5L20 32.5Z" fill="#E0E7FF"/>
+        <path d="M46 28.5V42M46 42C46 43.5 44.5 44 44.5 44" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/></linearGradient></defs>
+      </svg>
+      <div class="flex flex-col min-w-0">
+        <span class="font-title-md text-title-md text-inverse-on-surface leading-tight truncate">SANZA Univercity</span>
+        <span class="font-label-sm text-label-sm text-outline-variant uppercase tracking-wider">Enterprise ERP</span>
+      </div>
+      <button class="ml-auto lg:hidden text-inverse-on-surface/70" onclick="toggleSidebar(false)" type="button" aria-label="Close menu">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <nav class="px-space-sm py-space-sm flex flex-col gap-space-xs">
+      {% url 'dashboard' as dash_url %}
+      <a href="{{ dash_url }}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'dashboard,admin_dashboard,faculty_dashboard,student_portal' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}">
+        <span class="material-symbols-outlined text-lg">dashboard</span><span class="font-label-lg text-label-lg">Dashboard</span>
+      </a>
+
+      {% if user.is_staff or user.is_superuser %}
+      <div class="px-space-sm pt-space-sm pb-1"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Main</span></div>
+      <a href="{% url 'student_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'student_list' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">school</span><span class="font-label-lg text-label-lg">Students</span></a>
+      <a href="{% url 'faculty_reports_dashboard' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'faculty_reports_dashboard,faculty_analytics,faculty_performance_compare' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">badge</span><span class="font-label-lg text-label-lg">Faculty</span></a>
+      <a href="{% url 'department_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'department_list' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">corporate_fare</span><span class="font-label-lg text-label-lg">Departments</span></a>
+      {% endif %}
+
+      <div class="px-space-sm pt-space-sm pb-1"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Academics</span></div>
+      <a href="{% url 'course_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'course_list,course_analytics' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">menu_book</span><span class="font-label-lg text-label-lg">Courses</span></a>
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'enrollment_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'enrollment_list' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">how_to_reg</span><span class="font-label-lg text-label-lg">Enrollments</span></a>
+      {% endif %}
+      <a href="{% url 'grade_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'grade_list' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">grade</span><span class="font-label-lg text-label-lg">Grades &amp; GPA</span></a>
+      <a href="{% url 'schedule_dashboard' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'schedule_dashboard' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">calendar_month</span><span class="font-label-lg text-label-lg">Schedule</span></a>
+      <a href="{% url 'attendance_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'attendance_list,attendance_record,attendance_update' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">fact_check</span><span class="font-label-lg text-label-lg">Attendance</span></a>
+
+      <div class="px-space-sm pt-space-sm pb-1"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Records</span></div>
+      <a href="{% url 'fee_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'fee_list' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">account_balance_wallet</span><span class="font-label-lg text-label-lg">Fees &amp; Finance</span></a>
+      <a href="{% url 'transcript_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'transcript_list,transcript_detail' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">description</span><span class="font-label-lg text-label-lg">Transcripts</span></a>
+      <a href="{% url 'degree_audit_list' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'degree_audit_list,degree_audit_detail' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">checklist</span><span class="font-label-lg text-label-lg">Degree Audit</span></a>
+      <a href="{% url 'library_catalog' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'library_catalog' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">local_library</span><span class="font-label-lg text-label-lg">Library</span></a>
+      <a href="{% url 'leave_dashboard' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'leave_dashboard' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">event_busy</span><span class="font-label-lg text-label-lg">Leave</span></a>
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'workload_analysis' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'workload_analysis' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">analytics</span><span class="font-label-lg text-label-lg">Reports &amp; Analytics</span></a>
+      {% endif %}
+
+      <div class="px-space-sm pt-space-sm pb-1"><span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">System</span></div>
+      <a href="{% url 'notification_list' %}" class="flex items-center justify-between gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name in 'notification_list,notification_detail' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}">
+        <span class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-lg">notifications</span><span class="font-label-lg text-label-lg">Notifications</span></span>
+        {% if nav_unread_notifications %}<span class="min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center">{{ nav_unread_notifications }}</span>{% endif %}
+      </a>
+      <a href="{% url 'notification_settings' %}" class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl transition-all {% if request.resolver_match.url_name == 'notification_settings' %}nav-active{% else %}text-inverse-on-surface/75 hover:bg-surface-container-highest/10 hover:text-inverse-on-surface{% endif %}"><span class="material-symbols-outlined text-lg">settings</span><span class="font-label-lg text-label-lg">Settings</span></a>
+    </nav>
+  </div>
+
+  <div class="px-space-md py-space-sm border-t border-outline/20 bg-inverse-surface">
+    <div class="flex items-center justify-between py-1 mb-2">
+      <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-label-sm text-label-sm text-inverse-on-surface/90">{% now "N Y" %}</span></div>
+      <span class="font-label-sm text-label-sm text-secondary-fixed-dim font-semibold uppercase tracking-wider">Active</span>
+    </div>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'logout' %}" class="m-0">
+      {% csrf_token %}
+      <button class="w-full flex items-center justify-between px-space-sm py-1.5 rounded-full bg-surface-container-highest/10 hover:bg-surface-container-highest/20 text-inverse-on-surface transition-colors" type="submit">
+        <span class="font-label-sm text-label-sm font-medium">Sign out</span>
+        <span class="material-symbols-outlined text-sm text-outline-variant">logout</span>
+      </button>
+    </form>
+    {% endif %}
+  </div>
+</aside>
+
+<div class="lg:pl-64">
+  <header class="sticky top-0 h-16 bg-surface-container-lowest border-b border-outline-variant/30 shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-30 flex items-center justify-between px-space-md lg:px-space-lg gap-space-sm">
+    <div class="flex items-center gap-space-md flex-1 min-w-0">
+      <button class="lg:hidden text-on-surface-variant" onclick="toggleSidebar(true)" type="button" aria-label="Open menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div class="hidden sm:flex items-center gap-1 text-on-surface-variant font-label-md text-label-md flex-shrink-0">
+        <span class="material-symbols-outlined text-sm">home</span><span>/</span>
+        <span class="text-on-surface font-semibold">{% block breadcrumb %}Console{% endblock %}</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm flex-shrink-0">
+      {% if user.is_authenticated %}
+      <a href="{% url 'notification_list' %}" aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors">
+        <span class="material-symbols-outlined text-xl">notifications</span>
+        {% if nav_unread_notifications %}<span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-0.5 bg-error text-on-error font-label-sm rounded-full flex items-center justify-center text-[10px]">{{ nav_unread_notifications }}</span>{% endif %}
+      </a>
+      <div class="h-8 w-px bg-outline-variant/40 mx-1 hidden sm:block"></div>
+      <div class="flex items-center gap-space-sm pl-1">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary font-label-lg text-label-lg flex-shrink-0">
+          {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+        </div>
+        <div class="hidden xl:flex flex-col text-left leading-none">
+          <span class="font-title-md text-title-md text-on-surface">{{ user.get_full_name|default:user.username }}</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">{{ user.get_role_display }}</span>
+        </div>
+      </div>
+      {% else %}
+      <a href="{% url 'login' %}" class="px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg">Sign in</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="w-full px-space-md lg:px-space-lg py-space-lg bg-surface-bright min-h-[calc(100vh-4rem)]">
+    {% if messages %}
+    <div class="flex flex-col gap-space-sm mb-space-lg">
+      {% for message in messages %}
+      <div class="flex items-center gap-space-sm px-4 py-3 rounded-xl border font-body-sm text-body-sm
+        {% if message.tags == 'error' %}bg-error-container text-on-error-container border-error/20
+        {% elif message.tags == 'success' %}bg-success-container text-on-success-container border-success/20
+        {% elif message.tags == 'warning' %}bg-warning-container text-on-warning-container border-warning/20
+        {% else %}bg-info-container text-on-info-container border-info/20{% endif %}">
+        <span class="material-symbols-outlined text-lg">
+          {% if message.tags == 'error' %}error{% elif message.tags == 'success' %}check_circle{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}
+        </span>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<script>
+  function toggleSidebar(open) {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('mobileOverlay');
+    if (open) { sb.classList.remove('-translate-x-full'); ov.classList.remove('hidden'); }
+    else { sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); }
+  }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

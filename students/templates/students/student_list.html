@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block breadcrumb %}Students{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+
+  <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Student Roster
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Students</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Manage every enrolled student's record.</p>
+    </div>
+    <a href="{% url 'student_create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+      <span class="material-symbols-outlined text-lg">person_add</span> Add Student
+    </a>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Total Students</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ total_students }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Active Courses</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ active_courses }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Faculty</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ faculty_count }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Active Enrollments</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ new_enrollments }}</div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="p-5 border-b border-outline-variant/20">
+      <form method="get" class="relative max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name or roll number..." class="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-container-low border border-outline-variant/50 text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"/>
+      </form>
+    </div>
+
+    {% if students %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Roll No.</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Department</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Contact</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Year</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-on-primary flex items-center justify-center font-label-sm text-label-sm flex-shrink-0">{{ student.name|slice:":2"|upper }}</span>
+              <span class="font-body-sm text-body-sm text-on-surface font-medium">{{ student.name }}</span>
+            </td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ student.roll_number }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ student.get_department_display }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ student.email }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ student.enrollment_year }}</td>
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-end gap-1.5">
+                <a href="{% url 'student_update' student.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors" title="Edit"><span class="material-symbols-outlined text-lg">edit</span></a>
+                <a href="{% url 'student_delete' student.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-error transition-colors" title="Delete"><span class="material-symbols-outlined text-lg">delete</span></a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=students %}
+    {% else %}
+    <div class="py-16 text-center">
+      <span class="material-symbols-outlined text-4xl text-outline">school</span>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2">No students found{% if query %} for "{{ query }}"{% endif %}.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

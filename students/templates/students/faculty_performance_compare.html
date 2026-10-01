@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Faculty Reports{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Reports &amp; Analytics
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    {% if reports %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Faculty</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Courses</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Students</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Avg GPA</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Pass Rate</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Credits</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for report in reports %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ report.faculty.user.get_full_name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.total_courses_taught }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.total_students_taught }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.average_class_gpa }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-success">{{ report.pass_rate_percentage }}%</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ report.total_credits_assigned }}</td>
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'faculty_analytics' report.faculty.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors inline-flex"><span class="material-symbols-outlined text-lg">visibility</span></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=reports %}
+    {% else %}
+    <p class="px-5 py-16 text-center font-body-sm text-body-sm text-on-surface-variant">No reports available.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

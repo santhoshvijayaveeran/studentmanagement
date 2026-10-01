@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Enrollments{% endblock %}
+{% block breadcrumb %}Enrollments{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Academics
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Enrollments</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Course registrations across the institution.</p>
+    </div>
+    {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'enrollment_create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+      <span class="material-symbols-outlined text-lg">add</span> New Enrollment
+    </a>
+    {% endif %}
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    {% if enrollments %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Year</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Enrolled On</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Status</th>
+            {% if user.is_staff or user.is_superuser %}<th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for enrollment in enrollments %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ enrollment.student.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.course.code }} — {{ enrollment.course.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.semester_year }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+            <td class="px-5 py-3">
+              <span class="px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold
+                {% if enrollment.status == 'enrolled' %}bg-success-container text-on-success-container
+                {% elif enrollment.status == 'completed' %}bg-info-container text-on-info-container
+                {% elif enrollment.status == 'dropped' %}bg-error-container text-on-error-container
+                {% else %}bg-warning-container text-on-warning-container{% endif %}">
+                {{ enrollment.get_status_display }}
+              </span>
+            </td>
+            {% if user.is_staff or user.is_superuser %}
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-end gap-1.5">
+                <a href="{% url 'enrollment_update' enrollment.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></a>
+                <a href="{% url 'enrollment_delete' enrollment.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></a>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=enrollments %}
+    {% else %}
+    <div class="py-16 text-center">
+      <span class="material-symbols-outlined text-4xl text-outline">how_to_reg</span>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2">No enrollments found.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

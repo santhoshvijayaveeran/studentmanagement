@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Transcripts{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Records
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Cumulative GPA and academic standing per student.</p>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="p-5 border-b border-outline-variant/20">
+      <form method="get" class="relative max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name or roll number..." class="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-container-low border border-outline-variant/50 text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15"/>
+      </form>
+    </div>
+    {% if transcripts %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">GPA</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Credits</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Standing</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transcript in transcripts %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ transcript.student.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ transcript.cumulative_gpa }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ transcript.total_credits_completed }}/{{ transcript.total_credits_attempted }}</td>
+            <td class="px-5 py-3">
+              <span class="px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold
+                {% if transcript.academic_standing == 'Excellent' or transcript.academic_standing == 'Very Good' %}bg-success-container text-on-success-container
+                {% elif transcript.academic_standing == 'Probation' %}bg-error-container text-on-error-container
+                {% else %}bg-info-container text-on-info-container{% endif %}">
+                {{ transcript.academic_standing }}
+              </span>
+            </td>
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'transcript_detail' transcript.student.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors inline-flex"><span class="material-symbols-outlined text-lg">visibility</span></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=transcripts %}
+    {% else %}
+    <div class="py-16 text-center">
+      <span class="material-symbols-outlined text-4xl text-outline">description</span>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2">No transcripts found.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

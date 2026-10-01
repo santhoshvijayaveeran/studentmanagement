@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> System
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+    <h2 class="font-title-lg text-title-lg text-on-surface mb-4">Account</h2>
+    <div class="flex items-center gap-space-sm">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary font-title-lg text-title-lg flex-shrink-0">
+        {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+      </div>
+      <div>
+        <p class="font-title-md text-title-md text-on-surface">{{ user.get_full_name|default:user.username }}</p>
+        <p class="font-label-sm text-label-sm text-on-surface-variant">{{ user.email }} · {{ user.get_role_display }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+    <h2 class="font-title-lg text-title-lg text-on-surface mb-4">Notification Preferences</h2>
+    <div class="flex flex-col divide-y divide-outline-variant/15">
+      <div class="flex items-center justify-between py-3">
+        <div>
+          <p class="font-body-sm text-body-sm text-on-surface font-medium">Grade releases</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Get notified when new grades are released.</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-success-container text-on-success-container font-label-sm text-[11px] font-semibold">On</span>
+      </div>
+      <div class="flex items-center justify-between py-3">
+        <div>
+          <p class="font-body-sm text-body-sm text-on-surface font-medium">Fee due reminders</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Reminders before a fee payment is due.</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-success-container text-on-success-container font-label-sm text-[11px] font-semibold">On</span>
+      </div>
+      <div class="flex items-center justify-between py-3">
+        <div>
+          <p class="font-body-sm text-body-sm text-on-surface font-medium">Attendance warnings</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">Alerts when attendance falls below threshold.</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-success-container text-on-success-container font-label-sm text-[11px] font-semibold">On</span>
+      </div>
+    </div>
+    <p class="font-label-sm text-label-sm text-on-surface-variant mt-4">Per-channel preference controls are coming soon — for now all account notifications are delivered by default.</p>
+  </section>
+</div>
+{% endblock %}

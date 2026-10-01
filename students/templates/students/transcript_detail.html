@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Transcripts{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Academic Record
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      {% if transcript %}
+      <a href="{% url 'transcript_pdf' transcript.id %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all"><span class="material-symbols-outlined text-lg">download</span> Download PDF</a>
+      {% endif %}
+      {% if student %}{% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'transcript_regenerate' student.id %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all"><span class="material-symbols-outlined text-lg">refresh</span> Regenerate</a>
+      {% endif %}{% endif %}
+    </div>
+  </section>
+
+  {% if not transcript %}
+  <div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm text-center">
+    <span class="material-symbols-outlined text-4xl text-outline">description</span>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-2">No transcript has been generated yet.</p>
+  </div>
+  {% else %}
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Cumulative GPA</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ transcript.cumulative_gpa }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Credits Completed</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ transcript.total_credits_completed }}/{{ transcript.total_credits_attempted }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Courses Passed</span>
+      <div class="font-display text-headline-lg text-success leading-none mt-2">{{ transcript.total_courses_passed }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Academic Standing</span>
+      <div class="font-headline-sm text-headline-sm text-on-surface leading-tight mt-2">{{ transcript.academic_standing }}</div>
+    </div>
+  </section>
+
+  {% if grades %}
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-outline-variant/20">
+      <h2 class="font-title-lg text-title-lg text-on-surface">Course History</h2>
+    </div>
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Credits</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enrollment in grades %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3">
+            <p class="font-body-sm text-body-sm text-on-surface font-medium">{{ enrollment.course.code }}</p>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">{{ enrollment.course.name }}</p>
+          </td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.course.credits }}</td>
+          <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[11px] font-semibold">{{ enrollment.grade.grade }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

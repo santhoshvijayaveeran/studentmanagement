@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Degree Audit{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Degree Progress
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+    </div>
+    {% if student %}{% if user.is_staff or user.is_superuser %}
+    <div class="flex items-center gap-space-sm">
+      <a href="{% url 'degree_audit_update' audit.id %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all"><span class="material-symbols-outlined text-lg">edit</span> Edit Requirements</a>
+      <a href="{% url 'degree_audit_update_progress' student.id %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all"><span class="material-symbols-outlined text-lg">refresh</span> Recalculate</a>
+    </div>
+    {% endif %}{% endif %}
+  </section>
+
+  {% if not audit %}
+  <div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm text-center">
+    <span class="material-symbols-outlined text-4xl text-outline">checklist</span>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-2">No degree audit has been generated yet.</p>
+  </div>
+  {% else %}
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="font-title-lg text-title-lg text-on-surface">{{ audit.degree_name }}</h2>
+      <span class="px-2.5 py-1 rounded-full font-label-sm text-label-sm font-semibold
+        {% if audit.audit_status == 'completed' %}bg-success-container text-on-success-container
+        {% elif audit.audit_status == 'in_progress' %}bg-info-container text-on-info-container
+        {% else %}bg-surface-container-high text-on-surface-variant{% endif %}">
+        {{ audit.get_audit_status_display }}
+      </span>
+    </div>
+    <div class="h-3 rounded-full bg-surface-container-high overflow-hidden mb-1">
+      <div class="h-full bg-gradient-to-r from-primary to-secondary" style="width:{{ audit.overall_progress }}%"></div>
+    </div>
+    <p class="font-label-sm text-label-sm text-on-surface-variant">{{ audit.overall_progress }}% complete{% if audit.expected_graduation %} · Expected graduation {{ audit.expected_graduation|date:"M Y" }}{% endif %}</p>
+  </section>
+
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Credits Earned</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ audit.total_credits_earned }}/{{ audit.total_credits_required }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Core Courses</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ audit.core_courses_completed }}/{{ audit.core_courses_required }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Electives</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ audit.elective_courses_completed }}/{{ audit.elective_courses_required }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Overall Progress</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ audit.overall_progress }}%</div>
+    </div>
+  </section>
+
+  {% if completed_courses %}
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-on-surface">Completed Courses</h2></div>
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Credits</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for enrollment in completed_courses %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3"><p class="font-body-sm text-body-sm text-on-surface font-medium">{{ enrollment.course.code }}</p><p class="font-label-sm text-label-sm text-on-surface-variant">{{ enrollment.course.name }}</p></td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ enrollment.course.credits }}</td>
+          <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[11px] font-semibold">{{ enrollment.grade.grade }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

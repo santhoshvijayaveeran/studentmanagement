@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Students{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="mb-space-lg">
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">{{ title }}</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-1">{% if student %}Update the student's record below.{% else %}Fill in the details to add a new student.{% endif %}</p>
+  </div>
+
+  <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-8">
+    <form method="post" class="flex flex-col gap-space-lg">
+      {% csrf_token %}
+      {% include "partials/_form_fields.html" %}
+      <div class="flex flex-col sm:flex-row gap-space-sm mt-2">
+        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-lg">save</span> Save
+        </button>
+        <a href="{% url 'student_list' %}" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

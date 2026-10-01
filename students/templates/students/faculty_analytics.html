@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}Faculty Reports{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Instructor Analytics
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">{{ title }}</h1>
+    </div>
+    <a href="{% url 'faculty_report_pdf' report.id %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all"><span class="material-symbols-outlined text-lg">download</span> Download PDF</a>
+  </section>
+
+  {% if report %}
+  <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Courses Taught</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ report.total_courses_taught }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Students Taught</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ report.total_students_taught }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Avg. Class GPA</span>
+      <div class="font-display text-headline-lg text-on-surface leading-none mt-2">{{ report.average_class_gpa }}</div>
+    </div>
+    <div class="p-5 rounded-2xl bg-surface-container-lowest shadow-sm border border-outline-variant/20">
+      <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Pass Rate</span>
+      <div class="font-display text-headline-lg text-success leading-none mt-2">{{ report.pass_rate_percentage }}%</div>
+    </div>
+  </section>
+  {% else %}
+  <div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm text-center">
+    <p class="font-body-md text-body-md text-on-surface-variant">No performance report generated yet for this faculty member.</p>
+  </div>
+  {% endif %}
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-on-surface">Course-wise Performance</h2></div>
+    {% if course_analytics %}
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Enrolled</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Avg Marks</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Pass / Fail</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Pass Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in course_analytics %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ row.course.code }} — {{ row.course.name }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ row.enrollment_count }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ row.avg_marks }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ row.pass_count }} / {{ row.fail_count }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-success">{{ row.pass_rate }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="px-5 py-8 text-center font-body-sm text-body-sm text-on-surface-variant">No graded courses yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Grades{% endblock %}
+{% block breadcrumb %}Grades &amp; GPA{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Academics
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Grades &amp; GPA</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Released grades across enrollments.</p>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    {% if grades %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Marks</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Percentage</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Grade</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Released</th>
+            {% if user.is_faculty or user.is_staff or user.is_superuser %}<th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in grades %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ grade.enrollment.student.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ grade.enrollment.course.code }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ grade.total_marks }}/100</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ grade.percentage }}%</td>
+            <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[11px] font-semibold">{{ grade.grade }}</span></td>
+            <td class="px-5 py-3">
+              {% if grade.released %}
+              <span class="px-2 py-0.5 rounded-full bg-success-container text-on-success-container font-label-sm text-[11px] font-semibold">{{ grade.released_date|date:"M d, Y" }}</span>
+              {% else %}
+              <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-[11px] font-semibold">Not released</span>
+              {% endif %}
+            </td>
+            {% if user.is_faculty or user.is_staff or user.is_superuser %}
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'grade_update' grade.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors inline-flex"><span class="material-symbols-outlined text-lg">edit</span></a>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=grades %}
+    {% else %}
+    <div class="py-16 text-center">
+      <span class="material-symbols-outlined text-4xl text-outline">grade</span>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2">No grades found.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+[Unit]
+Description=Academic Management System Gunicorn Service
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/studentmanagement/studentmanagement
+EnvironmentFile=/var/www/studentmanagement/.env
+Environment="PATH=/var/www/studentmanagement/venv/bin"
+
+# Executive commands
+ExecStart=/var/www/studentmanagement/venv/bin/gunicorn \
+    --config /var/www/studentmanagement/studentmanagement/gunicorn_config.py \
+    --workers 4 \
+    --bind 127.0.0.1:8000 \
+    studentmanagement.wsgi:application
+
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Process management
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=studentmanagement
+
+# Security
+PrivateTmp=yes
+NoNewPrivileges=yes
+ReadWritePaths=/var/www/studentmanagement/logs
+ReadWritePaths=/var/www/studentmanagement/media
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Complete Faculty Profile{% endblock %}
+{% block breadcrumb %}Faculty Profile Setup{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="text-center mb-space-lg">
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Complete Your Faculty Profile</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-1">Add your faculty information to get started.</p>
+  </div>
+
+  <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm p-8">
+    <form method="post" action="{% url 'faculty_profile_setup' %}" class="flex flex-col gap-space-lg">
+      {% csrf_token %}
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.employee_id.label }} <span class="text-error">*</span></label>
+        {{ form.employee_id }}
+        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Unique employee identifier</p>
+        {% if form.employee_id.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.employee_id.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.department.label }} <span class="text-error">*</span></label>
+        {{ form.department }}
+        {% if form.department.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.department.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.specialization.label }}</label>
+        {{ form.specialization }}
+        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">e.g., Data Science, Web Development, etc.</p>
+        {% if form.specialization.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.specialization.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.experience_years.label }} <span class="text-error">*</span></label>
+        {{ form.experience_years }}
+        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Years of teaching/industry experience</p>
+        {% if form.experience_years.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.experience_years.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.phone.label }}</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block font-label-lg text-label-lg text-on-surface mb-1.5">{{ form.office_location.label }}</label>
+        {{ form.office_location }}
+        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">e.g., Building A, Room 301</p>
+        {% if form.office_location.errors %}<p class="text-error font-label-sm text-label-sm mt-1">{{ form.office_location.errors.0 }}</p>{% endif %}
+      </div>
+
+      {% if form.non_field_errors %}
+      <div class="flex items-center gap-space-sm px-4 py-3 rounded-xl border bg-error-container text-on-error-container border-error/20 font-body-sm text-body-sm">
+        <span class="material-symbols-outlined text-lg">error</span><span>{{ form.non_field_errors.0 }}</span>
+      </div>
+      {% endif %}
+
+      <div class="flex flex-col sm:flex-row gap-space-sm">
+        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-lg">save</span> Complete Profile
+        </button>
+        <a href="{% url 'dashboard' %}" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-outline-variant/50 text-on-surface font-label-lg text-label-lg hover:bg-surface-container-low transition-all">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-space-lg p-5 rounded-xl bg-info-container border border-info/20 flex gap-space-sm">
+    <span class="material-symbols-outlined text-info">info</span>
+    <div>
+      <h3 class="font-title-md text-title-md text-on-surface mb-1">Why we need this information</h3>
+      <ul class="list-disc pl-5 font-body-sm text-body-sm text-on-surface-variant space-y-0.5">
+        <li>Identify you accurately in the system</li>
+        <li>Assign courses and responsibilities</li>
+        <li>Enable proper contact and notifications</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

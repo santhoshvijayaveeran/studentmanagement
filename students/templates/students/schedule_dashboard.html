@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Schedule{% endblock %}
+{% block breadcrumb %}Schedule{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section>
+    <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+      <span class="w-2 h-2 rounded-full bg-secondary"></span> Academics
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Schedule / Timetable</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Your weekly class schedule and upcoming exams.</p>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden overflow-x-auto">
+    <div class="grid grid-cols-6 min-w-[720px]">
+      {% for day, slots in grouped_timetable.items %}
+      <div class="border-r border-outline-variant/15 last:border-r-0">
+        <div class="px-3 py-3 bg-surface-container-low text-center font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold border-b border-outline-variant/20">{{ day }}</div>
+        <div class="p-2 flex flex-col gap-2 min-h-[140px]">
+          {% for slot in slots %}
+          <div class="p-2 rounded-lg bg-primary/10 border border-primary/20">
+            <p class="font-label-sm text-label-sm text-primary font-semibold">{{ slot.course.code }}</p>
+            <p class="font-label-sm text-[11px] text-on-surface-variant">{{ slot.start_time|time:"H:i" }}–{{ slot.end_time|time:"H:i" }}</p>
+            {% if slot.classroom %}<p class="font-label-sm text-[11px] text-on-surface-variant">{{ slot.classroom.room_number }}</p>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-outline-variant/20"><h2 class="font-title-lg text-title-lg text-on-surface">Upcoming Exams</h2></div>
+    {% if exams %}
+    <table class="w-full text-left">
+      <thead class="bg-surface-container-low">
+        <tr>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Type</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Date</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Time</th>
+          <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Room</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for exam in exams %}
+        <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ exam.course.code }}</td>
+          <td class="px-5 py-3"><span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-[11px] font-semibold">{{ exam.get_exam_type_display }}</span></td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ exam.date|date:"M d, Y" }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ exam.start_time|time:"H:i" }}–{{ exam.end_time|time:"H:i" }}</td>
+          <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ exam.classroom.room_number|default:"TBA" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="px-5 py-8 text-center font-body-sm text-body-sm text-on-surface-variant">No upcoming exams scheduled.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

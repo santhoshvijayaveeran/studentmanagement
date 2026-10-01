@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-space-lg">
+  <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+    <div>
+      <div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-secondary"></span> Academics
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Attendance</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Daily attendance records.</p>
+    </div>
+    {% if user.is_faculty or user.is_staff or user.is_superuser %}
+    <a href="{% url 'attendance_record' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-label-lg text-label-lg shadow-md shadow-primary/25 hover:opacity-90 transition-all">
+      <span class="material-symbols-outlined text-lg">add</span> Record Attendance
+    </a>
+    {% endif %}
+  </section>
+
+  <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+    {% if attendance %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Student</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Course</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Date</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Status</th>
+            <th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Remarks</th>
+            {% if user.is_faculty or user.is_staff or user.is_superuser %}<th class="px-5 py-3 font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant text-right">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in attendance %}
+          <tr class="border-t border-outline-variant/15 hover:bg-surface-container-low/60">
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface font-medium">{{ record.enrollment.student.name }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ record.enrollment.course.code }}</td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ record.date|date:"M d, Y" }}</td>
+            <td class="px-5 py-3">
+              <span class="px-2 py-0.5 rounded-full font-label-sm text-[11px] font-semibold
+                {% if record.status == 'present' %}bg-success-container text-on-success-container
+                {% elif record.status == 'absent' %}bg-error-container text-on-error-container
+                {% elif record.status == 'late' %}bg-warning-container text-on-warning-container
+                {% else %}bg-info-container text-on-info-container{% endif %}">
+                {{ record.get_status_display }}
+              </span>
+            </td>
+            <td class="px-5 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ record.remarks|default:"—" }}</td>
+            {% if user.is_faculty or user.is_staff or user.is_superuser %}
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'attendance_update' record.id %}" class="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition-colors inline-flex"><span class="material-symbols-outlined text-lg">edit</span></a>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "partials/_pagination.html" with page_obj=attendance %}
+    {% else %}
+    <div class="py-16 text-center">
+      <span class="material-symbols-outlined text-4xl text-outline">fact_check</span>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-2">No attendance records found.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
